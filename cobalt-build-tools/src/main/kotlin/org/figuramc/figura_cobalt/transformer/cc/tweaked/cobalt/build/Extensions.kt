@@ -1,4 +1,4 @@
-package cc.tweaked.cobalt.build
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build
 
 import org.objectweb.asm.ConstantDynamic
 import org.objectweb.asm.Handle

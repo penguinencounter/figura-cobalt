@@ -1,6 +1,11 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
-import cc.tweaked.cobalt.build.*
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.UnsupportedConstruct
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.asDebugString
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.getResultType
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.isConstant
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.isReference
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.lineNumber
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*

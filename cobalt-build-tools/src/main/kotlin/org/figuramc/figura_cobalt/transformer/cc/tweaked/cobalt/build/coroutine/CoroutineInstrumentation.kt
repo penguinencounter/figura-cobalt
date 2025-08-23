@@ -1,8 +1,8 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
-import cc.tweaked.cobalt.build.ClassEmitter
-import cc.tweaked.cobalt.build.UnsupportedConstruct
-import cc.tweaked.cobalt.build.logger
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.ClassEmitter
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.UnsupportedConstruct
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.logger
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes

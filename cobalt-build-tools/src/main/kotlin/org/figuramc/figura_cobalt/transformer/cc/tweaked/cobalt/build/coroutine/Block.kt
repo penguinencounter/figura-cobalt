@@ -1,8 +1,8 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
-import cc.tweaked.cobalt.build.UnsupportedConstruct
-import cc.tweaked.cobalt.build.quoteForGraphViz
-import cc.tweaked.cobalt.build.withMethodTraceVisitor
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.UnsupportedConstruct
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.quoteForGraphViz
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.withMethodTraceVisitor
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.GOTO
 import org.objectweb.asm.tree.*
@@ -41,8 +41,8 @@ interface Block : Iterable<AbstractInsnNode> {
 
 	/** Get a debugging representation of this block's instructions. */
 	fun dumpInstructions(): String = withMethodTraceVisitor {
-		for (insn in this) insn.accept(it)
-	}
+        for (insn in this) insn.accept(it)
+    }
 
 	/** Iterate over the instructions in this block. */
 	override fun iterator(): Iterator<AbstractInsnNode> = object : Iterator<AbstractInsnNode> {

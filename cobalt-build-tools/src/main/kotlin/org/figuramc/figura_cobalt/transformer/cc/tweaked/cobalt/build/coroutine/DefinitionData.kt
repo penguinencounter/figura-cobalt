@@ -1,7 +1,7 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
-import cc.tweaked.cobalt.build.UnsupportedConstruct
-import cc.tweaked.cobalt.build.logger
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.UnsupportedConstruct
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.logger
 import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
 import org.slf4j.Logger
@@ -11,7 +11,7 @@ private val logger: Logger = logger {}
 sealed interface YieldType {
 
 	/**
-	 * This method is annotated with the [cc.tweaked.cobalt.build.coroutine.AUTO_UNWIND] annotation.
+	 * This method is annotated with the [AUTO_UNWIND] annotation.
 	 *
 	 * Calls to this method (and the definition itself) will be instrumented to include an extra state parameter.
 	 */
@@ -103,7 +103,7 @@ class DefinitionScanner : DefinitionData {
 	override fun getInstrumentType(owner: String, name: String, desc: String): InstrumentType? = instrumentMethods[Desc(owner, name, desc)]
 	override fun isFieldFinal(owner: String, name: String, desc: String): Boolean = finalFields.contains(Desc(owner, name, desc))
 
-	private inner class ClassScanner : ClassVisitor(Opcodes.ASM9) {
+	private inner class ClassScanner : ClassVisitor(ASM9) {
 		private lateinit var className: String
 		private var autoUnwind: Boolean = false
 		var instrument: Boolean = false
@@ -119,13 +119,13 @@ class DefinitionScanner : DefinitionData {
 		}
 
 		override fun visitField(access: Int, name: String, descriptor: String, signature: String?, value: Any?): FieldVisitor? {
-			if ((access and Opcodes.ACC_FINAL) != 0) finalFields.add(Desc(className, name, descriptor))
+			if ((access and ACC_FINAL) != 0) finalFields.add(Desc(className, name, descriptor))
 			return null
 		}
 
 		override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor {
 			val willUnwind = exceptions != null && exceptions.contains(UNWIND_THROWABLE.internalName)
-			return object : MethodVisitor(Opcodes.ASM9) {
+			return object : MethodVisitor(ASM9) {
 				// We create a method visitor which looks for calls to static methods on SuspendedTask. There's some
 				// nastiness here as we want to keep track of the lambda which occurs just before that static call (as
 				// that should also be treated as an @AutoUnwind function).
@@ -194,7 +194,8 @@ class DefinitionScanner : DefinitionData {
 						// If we're annotated with @AutoUnwind, but we don't unwind then something is very odd!
 						autoUnwindMethod ->
 							throw UnsupportedConstruct(
-								"$className.$name$descriptor is annotated @AutoUnwind, but does not unwind.")
+								"$className.$name$descriptor is annotated @AutoUnwind, but does not unwind."
+							)
 
 						// If this function unwinds, but is not @AutoUnwind function, then mark as a yielding call, but
 						// one which is ignored by our transform. We use putIfAbsent here, as there are some hard-coded

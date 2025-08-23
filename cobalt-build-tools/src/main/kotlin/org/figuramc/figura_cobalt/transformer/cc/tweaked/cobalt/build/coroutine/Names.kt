@@ -1,4 +1,4 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
 import org.objectweb.asm.*
 

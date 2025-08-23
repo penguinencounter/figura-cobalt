@@ -25,6 +25,7 @@
 package org.figuramc.figura_cobalt.org.squiddev.cobalt;
 
 import org.figuramc.figura_cobalt.LuaUncatchableError;
+import org.figuramc.figura_cobalt.org.squiddev.cobalt.function.LuaFunction;
 import org.figuramc.memory_tracker.AllocationTracker;
 import org.figuramc.figura_cobalt.org.squiddev.cobalt.compiler.BytecodeFormat;
 import org.figuramc.figura_cobalt.org.squiddev.cobalt.compiler.LoadState;
@@ -87,12 +88,12 @@ public class LuaState {
 	/**
 	 * The currently executing thread
 	 */
-	LuaThread currentThread;
+	@Nullable LuaThread currentThread;
 
 	/**
-	 * The currently executing main thread
+	 * The currently executing main thread.
 	 */
-	private final LuaThread mainThread;
+	private LuaThread mainThread;
 
 	private final LuaTable globals;
 
@@ -116,7 +117,22 @@ public class LuaState {
 
 		globals = new LuaTable(allocationTracker);
 		registry = new GlobalRegistry(allocationTracker);
-		mainThread = currentThread = new LuaThread(this);
+		mainThread = currentThread = null;
+	}
+
+	/**
+	 * Run the given function in this state with the given args.
+	 * It is not allowed to yield.
+	 * It will fill in a stacktrace, which will not happen if using Dispatch.invoke() as the entrypoint!
+	 */
+	public Varargs runNoYield(LuaValue function, Varargs args) throws LuaError, LuaUncatchableError {
+		LuaThread prevMainThread = mainThread;
+		try {
+			mainThread = new LuaThread(this);
+			return LuaThread.loop(this, mainThread, function, args);
+		} finally {
+			mainThread = prevMainThread;
+		}
 	}
 
 	/**
@@ -205,8 +221,8 @@ public class LuaState {
 			case CONTINUE -> {
 			}
 			case SUSPEND -> {
-				if (currentThread.getStatus() != LuaThread.Status.RUNNING) {
-					throw new IllegalStateException("Called checkInterrupt from a " + currentThread.getStatus().getDisplayName() + " thread");
+				if (currentThread == null || currentThread.getStatus() != LuaThread.Status.RUNNING) {
+					throw new IllegalStateException("Called checkInterrupt from a " + (currentThread == null ? "null" : currentThread.getStatus().getDisplayName()) + " thread");
 				}
 
 				DebugFrame top = currentThread.getDebugState().getStackUnsafe();

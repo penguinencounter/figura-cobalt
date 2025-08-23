@@ -1,12 +1,14 @@
-package cc.tweaked.cobalt.build.coroutine
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.coroutine
 
-import cc.tweaked.cobalt.build.*
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.ClassEmitter
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.UnsupportedConstruct
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.getDefaultOpcode
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.isReference
+import org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build.visitLoadInt
 import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.commons.LocalVariablesSorter
 import org.objectweb.asm.tree.*
-import java.util.Arrays
-import java.util.Objects
 import kotlin.math.ceil
 
 private val OBJECT = Type.getObjectType("java/lang/Object")
@@ -126,12 +128,12 @@ private fun instrumentMethodCalls(method: MethodNode, yieldPoints: List<YieldPoi
  * [MethodVisitor.visitMaxs] to add hooks at the start and end of the function.
  */
 private class AutoUnwindRewriter(
-	access: Int, desc: String,
-	private val yieldPoints: List<YieldPoint>,
-	private val afterLabels: List<Label>,
-	classEmitter: ClassEmitter,
-	private val definitions: DefinitionData,
-	private val sink: MethodVisitor,
+    access: Int, desc: String,
+    private val yieldPoints: List<YieldPoint>,
+    private val afterLabels: List<Label>,
+    classEmitter: ClassEmitter,
+    private val definitions: DefinitionData,
+    private val sink: MethodVisitor,
 ) : MethodVisitor(ASM9) {
 	private val resume = Label()
 	private val rebuild = yieldPoints.map { Label() }
@@ -400,11 +402,11 @@ private class AutoUnwindRewriter(
  * resuming.
  */
 fun instrumentAutoUnwind(
-	method: MethodNode,
-	yieldPoints: List<YieldPoint>,
-	emitter: ClassEmitter,
-	definitions: DefinitionData,
-	mw: MethodVisitor,
+    method: MethodNode,
+    yieldPoints: List<YieldPoint>,
+    emitter: ClassEmitter,
+    definitions: DefinitionData,
+    mw: MethodVisitor,
 ) {
 	val labels = instrumentMethodCalls(method, yieldPoints)
 	method.accept(AutoUnwindRewriter(method.access, method.desc, yieldPoints, labels, emitter, definitions, mw))

@@ -278,32 +278,7 @@ public final class LuaThread extends LuaValue {
 		throw UnwindThrowable.resume(thread, args);
 	}
 
-	// These are cursed and I don't understand them, run functions on a new thread instead
-//	public static Varargs runMain(LuaState state, LuaValue function) throws LuaError {
-//		return run(state, state.getMainThread(), function, Constants.NONE);
-//	}
-//
-//	public static Varargs runMain(LuaState state, LuaValue function, Varargs args) throws LuaError {
-//		return run(state, state.getMainThread(), function, args);
-//	}
-
-	/**
-	 * Start or resume this thread
-	 *
-	 * @param thread The thread to resume
-	 * @param args   The arguments to send as return values to {@link #yield(LuaState, Varargs)}
-	 * @return {@link Varargs} provided as arguments to {@link #yield(LuaState, Varargs)}
-	 * @throws LuaError If the current function threw an exception.
-	 */
-	public static Varargs run(LuaThread thread, Varargs args) throws LuaError, LuaUncatchableError {
-		return run(thread.luaState, thread, null, args);
-	}
-
-	private static Varargs run(final LuaState state, LuaThread thread, LuaValue function, Varargs args) throws LuaError, LuaUncatchableError {
-		return loop(state, thread, function, args);
-	}
-
-	private static Varargs loop(final LuaState state, LuaThread thread, LuaValue function, Varargs args) throws LuaError, LuaUncatchableError {
+	public static Varargs loop(final LuaState state, LuaThread thread, LuaValue function, Varargs args) throws LuaError, LuaUncatchableError {
 		LuaError le = null;
 		do {
 			final DebugState ds = thread.debugState;

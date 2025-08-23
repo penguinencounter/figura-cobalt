@@ -1,9 +1,8 @@
-package cc.tweaked.cobalt.build
+package org.figuramc.figura_cobalt.transformer.cc.tweaked.cobalt.build
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.util.CheckClassAdapter
 import org.slf4j.Logger
 import java.nio.file.Files
 import java.nio.file.Path
@@ -33,7 +32,7 @@ class InMemoryClassEmitter : ClassEmitter {
 }
 
 /** An implementation of [ClassEmitter] which writes files to a directory. */
-class FileClassEmitter(private val classPrefix: String, private val outputDir: Path) : ClassEmitter {
+class FileClassEmitter(private val outputDir: Path) : ClassEmitter {
 	private val emitted = mutableSetOf<String>()
 	override fun generate(name: String, classReader: ClassReader?, flags: Int, write: (ClassVisitor) -> Unit) {
 		if (!emitted.add(name)) return
@@ -42,12 +41,10 @@ class FileClassEmitter(private val classPrefix: String, private val outputDir: P
 		val cw = NonLoadingClassWriter(classReader, flags)
 		write(/*CheckClassAdapter(*/cw/*)*/)
 
-		if (!name.startsWith(classPrefix)) throw IllegalStateException("Failed to instrument; class prefix incorrect")
-		val outputFile = outputDir.resolve("${name.replaceFirst(classPrefix, "")}.class")
-		if (!outputFile.startsWith(outputDir)) throw IllegalStateException("Failed to instrument, file is outside output directory")
-		Files.createDirectories(outputFile.parent)
-		logger.info("Outputting to {}", outputFile)
-		Files.write(outputFile, cw.toByteArray())
+		val outputPath = outputDir.resolve("$name.class")
+		logger.info("Outputting to {}", outputPath)
+		Files.createDirectories(outputPath.parent)
+		Files.write(outputPath, cw.toByteArray())
 	}
 }
 
