@@ -103,7 +103,7 @@ public final class LuaString extends LuaValue implements Comparable<LuaString> {
 			return s;
 		}
 
-		public static final Cache instance = new Cache();
+		public static final ThreadLocal<Cache> INSTANCE = ThreadLocal.withInitial(Cache::new);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public final class LuaString extends LuaValue implements Comparable<LuaString> {
 		// Don't bother tracking strings that are shorter than RECENT_STRINGS_MAX_LENGTH.
 		// They aren't the memory hogs anyway.
 		if (bytes.length < RECENT_STRINGS_MAX_LENGTH) {
-			return Cache.instance.get(new LuaString(bytes, off, len));
+			return Cache.INSTANCE.get().get(new LuaString(bytes, off, len));
 		} else if (forceNoCopy || len >= bytes.length / 2) {
 			// Reuse backing only when more than half the bytes are part of the result.
 			// Backing is reused, don't track.
@@ -155,7 +155,7 @@ public final class LuaString extends LuaValue implements Comparable<LuaString> {
 			if (allocTracker != null) allocTracker.track(b);
 			System.arraycopy(bytes, off, b, 0, len);
 			LuaString string = new LuaString(b, 0, len);
-			return len < RECENT_STRINGS_MAX_LENGTH ? Cache.instance.get(string) : string;
+			return len < RECENT_STRINGS_MAX_LENGTH ? Cache.INSTANCE.get().get(string) : string;
 		}
 	}
 	public static LuaString valueOf(@Nullable AllocationTracker<LuaUncatchableError> allocTracker, byte[] bytes, int off, int len) throws LuaUncatchableError {
