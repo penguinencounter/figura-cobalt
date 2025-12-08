@@ -88,7 +88,7 @@ public final class DebugLib {
 			RegisteredFunction.ofV("sethook", DebugLib::sethook),
 			RegisteredFunction.ofV("setlocal", DebugLib::setlocal),
 			RegisteredFunction.ofV("setmetatable", DebugLib::setmetatable),
-			RegisteredFunction.ofV("setupvalue", DebugLib::varargs),
+			RegisteredFunction.ofV("setupvalue", DebugLib::setupvalue),
 			RegisteredFunction.ofV("traceback", DebugLib::traceback),
 			RegisteredFunction.ofV("upvalueid", DebugLib::upvalueId),
 			RegisteredFunction.ofV("upvaluejoin", DebugLib::upvalueJoin),
@@ -331,7 +331,7 @@ public final class DebugLib {
 		return NIL;
 	}
 
-	private static Varargs varargs(LuaState state, Varargs args) throws LuaError, LuaUncatchableError {
+	private static Varargs setupvalue(LuaState state, Varargs args) throws LuaError, LuaUncatchableError {
 		LuaValue func = args.arg(1).checkFunction(state);
 		int up = args.arg(2).checkInteger(state);
 		LuaValue value = args.arg(3);
